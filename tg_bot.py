@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 api_id = 12345
 api_hash = '0123456789abcdef0123456789abcdef'
 client = TelegramClient('anon', api_id, api_hash)
-
+dialog_name = input("which channel do you want to delete from: ")
+print(dialog_name)
 async def main():
     # Getting information about yourself
     me = await client.get_me()
@@ -33,15 +34,22 @@ async def main():
     chat_id = None
     await client.get_dialogs()
     async for dialog in client.iter_dialogs():
-        if dialog.name == "delete test group":
+        if dialog.name == dialog_name:
             chat_id = dialog.id
+            break
     real_id, peer_type = utils.resolve_id(chat_id)
-    my_chat    = await client.get_entity(PeerChat(real_id))
+    my_chat    = await client.get_entity(PeerChannel(real_id))
     async for messages in client.iter_messages(my_chat):
             if "MessageActionChatAddUser" in str(messages.action) or "MessageActionChatJoinedByLink" in str(messages.action):
                 if messages.date >= datetime(2021, 8, 30, 21, 20, 0, tzinfo=timezone.utc) and messages.date <= datetime(2021, 9, 1, 11, 29, 0, tzinfo=timezone.utc):
                     for user in messages.action.users:
-                        msg = await client.kick_participant(my_chat, user)
-                        await msg.delete()
+                        try:
+                            #user_entity = await client.get_entity(user)
+                            #print(user_entity.first_name, user_entity.last_name)
+                            msg = await client.kick_participant(my_chat, user)
+                            await msg.delete()
+                        except:
+                            pass
+
 with client:
     client.loop.run_until_complete(main())
