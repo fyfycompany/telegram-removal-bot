@@ -39,7 +39,7 @@ async def main():
     my_chat    = await client.get_entity(PeerChat(real_id))
     async for messages in client.iter_messages(my_chat):
             if "MessageActionChatAddUser" in str(messages.action) or "MessageActionChatJoinedByLink" in str(messages.action):
-                if messages.date >= datetime(2021, 30, 8, 21, 0, 0, tzinfo=timezone.utc):
+                if messages.date >= datetime(2021, 8, 30, 21, 20, 0, tzinfo=timezone.utc) and messages.date <= datetime(2021, 9, 1, 11, 29, 0, tzinfo=timezone.utc):
                     for user in messages.action.users:
                         msg = await client.kick_participant(my_chat, user)
                         await msg.delete()
